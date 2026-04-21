@@ -369,3 +369,14 @@ async def health_check():
         "version": settings.app_version,
         "ollama_connected": ollama_ok,
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host=settings.host,
+        port=settings.port,
+        proxy_headers=True,
+    )

@@ -50,7 +50,7 @@ Next steps:
 1. Edit .env with your production values.
 2. Install and start Ollama separately on the server.
 3. Start the backend with:
-   .venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --proxy-headers
+  .venv/bin/python main.py
 4. Put Nginx in front of the backend using deploy/nginx/api.your-domain.com.conf.
 
 EOF

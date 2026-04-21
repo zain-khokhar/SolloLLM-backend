@@ -22,7 +22,7 @@ This is the Ubuntu deployment backend for SoloLLM.
 1. Create a virtual environment.
 2. Install `requirements.txt`.
 3. Copy `.env.example` to `.env` and set your production values.
-4. Run `uvicorn main:app --host 127.0.0.1 --port 8000 --proxy-headers`.
+4. Run `python main.py` from the activated virtual environment.
 
 ## Ubuntu assets
 

@@ -191,20 +191,26 @@ async def update_settings(request: SettingsUpdate):
 
     # Validate default_model is actually installed before saving
     if "default_model" in updates:
-        from core.inference import ollama_client
-        try:
-            installed = await ollama_client.list_models()
-            installed_names = [m["name"] for m in installed]
-            requested = updates["default_model"]
-            if requested not in installed_names:
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Model '{requested}' is not installed. Available models: {', '.join(installed_names) or 'none'}",
-                )
-        except HTTPException:
-            raise
-        except Exception as e:
-            logger.warning(f"Could not verify model availability: {e}")
+        current_default = await get_setting("default_model") or settings.default_model
+        requested = updates["default_model"]
+
+        # Skip strict validation when the value is unchanged.
+        # The frontend sends full settings payloads, and we still want users
+        # to update other fields (like ollama_base_url) without being blocked.
+        if requested != current_default:
+            from core.inference import ollama_client
+            try:
+                installed = await ollama_client.list_models()
+                installed_names = [m["name"] for m in installed]
+                if requested not in installed_names:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Model '{requested}' is not installed. Available models: {', '.join(installed_names) or 'none'}",
+                    )
+            except HTTPException:
+                raise
+            except Exception as e:
+                logger.warning(f"Could not verify model availability: {e}")
 
     for key, value in updates.items():
         await set_setting(key, str(value))
